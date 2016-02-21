@@ -1,3 +1,5 @@
+// Use blockr.io to fetch a balance of a bitcoin address
+
 var request = require('request');
 var getConfig = require('../lib/config');
 var DataPoints = require('datapoints');
@@ -6,12 +8,17 @@ var config = getConfig('../config/datapoints');
 
 var client = new DataPoints(config.datapoints);
 
-var LTC_PER_DAY = 25 * (24 * 60 / 2.5);
+var list = [];
 
 function update() {
 
+	if(!list.length)
+		list = config.bitcoin_addresses.concat();
+
+	var address = list.shift();
+
 	request({ 
-		uri: "https://www.litecoinpool.org/api?api_key="+config.litecoinpool.api_key,
+		uri: "http://btc.blockr.io/api/v1/address/info/"+address,
 		json : true
 	}, function(err, response, data) {
 		if(err) {
@@ -19,18 +26,11 @@ function update() {
 			return setTimeout(update, 60 * 1000);
 		}
 
+		var balance = data.data.balance;
+
 		var items = [{
-			name : 'LTC HASH RATE',
-			value : client.format.hashrate(data.user.hash_rate)// * Math.pow(2,32))
-		}, {
-			name : 'LTC PENDING',
-			value : client.format.currency(data.user.unpaid_rewards, { prec : 4 })
-		}, {
-			name : 'LTC NETWORK RATE',
-			value : client.format.hashrate(data.network.hash_rate)// * Math.pow(2,32))
-		}, {
-			name : 'LTC ESTIMATE',
-			value : client.format.currency((data.user.hash_rate / data.network.hash_rate) * LTC_PER_DAY)
+			name : 'BTC-'+address.substring(0,6),
+			value : client.format.currency(balance)
 		}]
 		
 		console.log(items);
@@ -42,11 +42,7 @@ function update() {
 			setTimeout(update, 60 * 1000);
 		})
 
-
-
 	});
-
-
 
 }
 
