@@ -1,0 +1,17 @@
+{
+  "name": "datapoints-nodejs-examples",
+  "version": "0.0.1",
+  "author": {
+    "name": "Data Points Inc.",
+    "email": "support@datapoints.global"
+  },
+  "description": "DataPoints Examples",
+  "private": true,
+  "dependencies": {
+    "datapoints" : "*",
+    "colors" : "*",
+    "underscore" : "*",
+    "request": "*",
+    "underscore" : "*"
+  }
+}
